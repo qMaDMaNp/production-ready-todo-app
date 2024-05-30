@@ -1,0 +1,31 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "module": "commonjs",
+    "target": "es5",
+    "strict": false, // TODO: remove in the future
+    "strictPropertyInitialization": false, // TODO: remove in the future
+    "strictNullChecks": false, // TODO: remove in the future
+    "noImplicitAny": false, // TODO: remove in the future
+    "noImplicitOverride": true,
+    "noImplicitReturns": false,
+    "sourceMap": true,
+    "declaration": false,
+    "outDir": "build",
+    "rootDir": "server",
+    "resolveJsonModule": true,
+    "paths": {
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@services/*": ["./src/services/*"]
+    }
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "./src/storage"
+  ],
+}
