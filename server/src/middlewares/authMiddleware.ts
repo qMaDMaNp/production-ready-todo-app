@@ -2,10 +2,10 @@
 import { RequestHandler, Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 
-import { ApiError } from '../lib/BaseError';
-import TokenService from '../services/TokenService';
+import { ApiError } from '@lib/BaseError';
+import TokenService from '@services/TokenService';
 
-import registerRequestRules from './rules/registerRequestRules';
+import registerRequestRules from '@middlewares/rules/registerRequestRules';
 
 
 export const authMiddleware: RequestHandler = async (req: {user?: any}, res, next) => {

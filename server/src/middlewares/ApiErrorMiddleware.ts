@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApiError } from '../lib/BaseError';
+import { ApiError } from '@lib/BaseError';
 
 export default function ApiErrorMiddleware(err: ApiError, req: Request, res: Response, next: NextFunction): Response {
     console.error('ApiErrorMiddleware', err);
@@ -7,6 +7,6 @@ export default function ApiErrorMiddleware(err: ApiError, req: Request, res: Res
     if (err.status) {
         return res.status(err.status).json({ message: err.message, errors: err.errors });
     }
-    ApiErrorMiddleware
+ 
     return res.status(500).json({ message: 'Internal server error' });
 }

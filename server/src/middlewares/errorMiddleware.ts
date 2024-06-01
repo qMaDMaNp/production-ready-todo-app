@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApiError } from '../lib/BaseError';
+import { ApiError } from '@lib/BaseError';
 
 export default function errorHandler(err: ApiError, req: Request, res: Response, next: NextFunction): Response {
     console.log(err);

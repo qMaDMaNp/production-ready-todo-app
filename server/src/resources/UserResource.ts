@@ -1,4 +1,4 @@
-import { UserDocument } from '../db/models/User';
+import { UserDocument } from '@db/models/User';
 
 class UserResource {
     email: string;

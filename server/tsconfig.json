@@ -13,11 +13,17 @@
     "sourceMap": true,
     "declaration": false,
     "outDir": "build",
-    "rootDir": "server",
+    "rootDir": "src",
     "resolveJsonModule": true,
     "paths": {
+      "@/*": ["./src/*"],
+      "@db/*": ["./src/db/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@api/*": ["./src/api/*"],
       "@middlewares/*": ["./src/middlewares/*"],
       "@controllers/*": ["./src/controllers/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@resources/*": ["./src/resources/*"],
       "@services/*": ["./src/services/*"]
     }
   },

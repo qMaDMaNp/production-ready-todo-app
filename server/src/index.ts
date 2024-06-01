@@ -4,11 +4,10 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 
-import DB from './db';
-import routes from './routes';
-import { io } from './sockets';
+import DB from '@db/index';
+import routes from '@/routes';
 
-import ApiErrorMiddleware from "./middlewares/ApiErrorMiddleware";
+import ApiErrorMiddleware from "@middlewares/ApiErrorMiddleware";
 
 const server = express();
 const PORT = 4444;
@@ -45,8 +44,6 @@ server.use(ApiErrorMiddleware);
     await DB.connect();
 
     app = server.listen(PORT, async () => {
-        //start socket server
-        io.attach(app);
         console.info(`App is listening on ${PORT}`);
     });
 

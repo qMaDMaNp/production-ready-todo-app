@@ -1,7 +1,7 @@
 import { validationResult } from 'express-validator';
 
 
-export const validator = (rules) => {
+export default function validator(rules) {
   return async (req) => {
     await Promise.all(rules.map((rule) => rule.run(req)));
 
@@ -11,5 +11,3 @@ export const validator = (rules) => {
     throw errors;
   };
 }
-
-export default validator;

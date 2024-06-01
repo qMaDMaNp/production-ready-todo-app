@@ -1,11 +1,10 @@
 import bcrtpt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
-import { User, UserDocument } from '../db/models/User';
-import MailService from './MailService';
-import TokenService from './TokenService';
-import UserResource from '../resources/UserResource';
-import { ApiError } from '../lib/BaseError';
+import { User, UserDocument } from '@db/models/User';
+import TokenService from '@services/TokenService';
+import UserResource from '@resources/UserResource';
+import { ApiError } from '@lib/BaseError';
 
 interface UserResponse {
     accessToken: string;
@@ -13,8 +12,7 @@ interface UserResponse {
     user: UserResource;
 }
 
-
-class UserDataService {
+class UserService {
     async registration(email: string, password: string): Promise<UserResponse> {
         const user = await User.findOne({ email });
 
@@ -137,4 +135,4 @@ class UserDataService {
       }
 }
 
-export default new UserDataService();
+export default new UserService();
