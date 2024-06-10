@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 
 import BaseLayout from '@views/layouts/BaseLayout';
-
+import TodoList from './page-components/home-page/TodoList';
 
 export default function HomePage() {
     return (
@@ -16,6 +16,10 @@ export default function HomePage() {
                         <Typography variant="h5" gutterBottom>
                             Home Page
                         </Typography>
+                    </Grid>
+
+                    <Grid item xs={12} md={8}>
+                        <TodoList />
                     </Grid>
                 </Grid>
             </Box>

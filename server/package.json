@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf ./build && tsc",
+    "build": "rimraf ./build && tsc && tsc-alias",
     "dev": "ts-node-dev --poll --respawn --transpile-only -r tsconfig-paths/register ./src/index.ts",
     "prod": "node ./build/index.js 4444"
   },
@@ -29,6 +29,7 @@
     "shx": "^0.3.4",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
     "tslib": "^2.5.0",
     "typescript": "^5.0.4"

@@ -4,6 +4,7 @@ services:
   server:
     image: node:18-alpine
     working_dir: /app
+    restart: unless-stopped
     command: sh -c "npm install && npm run dev"
     ports:
       - 127.0.0.1:4444:4444
