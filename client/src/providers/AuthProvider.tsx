@@ -1,102 +1,81 @@
-//@ts-nocheck
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from 'react';
+import { 
+  getUser, 
+  loginUser, 
+  registerUser, 
+  logoutUser 
+} from '../api/auth';
 
-import {
-    addInterceptorErrorHandling,
+const AuthContext = createContext(null);
 
-    login as loginRequest,
-    logout as logoutRequest,
-    register as registerRequest,
-    checkAuth as checkAuthRequest,
-} from "../api/auth";
-
-export const AuthContext = createContext(null);
+export const useAuth = () => useContext(AuthContext);
 
 export default function AuthProvider({ children }) {
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || {});
-    const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken') || '');
+  const [user, setUser] = useState(null);
+  const [getUserRequestInProgress, setGetUserRequestInProgress] = useState(true);
 
-    const isAuth = accessToken.length > 0 && Object.keys(user).length > 0;
+  useEffect(() => {
+    const getUserSession = async () => {
+      try {
+        const res = await getUser();
+        setUser(res.data.user);
+      } 
+      catch (err) {
+        console.error('Error checking user session', err);
+        setUser(null);
+      } 
+      finally {
+        setGetUserRequestInProgress(false);
+      }
+    };
 
-    useEffect(() => {
-        addInterceptorErrorHandling();
+    getUserSession();
+  }, []);
 
-        if (localStorage.getItem('accessToken')) checkAuthRequest();
-    }, []);
-
-    const login = async (email: string, password: string): Promise<void> => {
-        try {
-            const res = await loginRequest(email, password);
-
-            addCredentials(res.data.accessToken, res.data.user);
-
-            window.location.reload();
-        } catch (e) {
-            console.error(e.res?.data?.message);
-            throw (e);
-        }
+  const login = async (credentials) => {
+    try {
+      const res = await loginUser(credentials);
+      setUser(res.data.user);
+    } 
+    catch (err) {
+      console.error('Error logging in', err);
+      throw err;
     }
+  };
 
-    const register = async (email: string, password: string) => {
-        try {
-            const res = await registerRequest(email, password);
+  const register = async (credentials) => {
+    try {
+      const res = await registerUser(credentials);
+      setUser(res.data.user);
+    } 
+    catch (err) {
+      console.error('Error registering', err);
+      throw err;
+    }
+  };
 
-            addCredentials(res.data.accessToken, res.data.user);
+  const logout = async () => {
+    try {
+      await logoutUser();
+      window.location.reload();
+    } 
+    catch (err) {
+      console.error('Error logging out', err);
+    }
+  };
 
-            window.location.reload();
-        }
-        catch (e) {
-            console.error(e.res?.data?.message);
-            throw (e);
-        }
-    };
+  const value = {
+    user,
+    getUserRequestInProgress,
 
-    const logout = async () => {
-        try {
-            await logoutRequest();
+    login,
+    logout,
+    register
+  };
 
-            removeCredentials();
-
-            window.location.reload();
-        }
-        catch (e) {
-            console.error(e);
-        }
-    };
-
-    const addCredentials = (accessToken, user, updateInterface = false) => {
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('user', JSON.stringify(user));
-
-        if (updateInterface) {
-            setAccessToken(accessToken);
-            setUser(user);
-        }
-    };
-
-    const removeCredentials = (updateInterface = false) => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('user');
-
-        if (updateInterface) {
-            setAccessToken('');
-            setUser({});
-        }
-    };
-
-    const sharedValues = {
-        user,
-        isAuth,
-
-        login,
-        logout,
-        register,
-        checkAuthRequest
-    };
-
-    return (
-        <AuthContext.Provider value={sharedValues}>
-            {children}
-        </AuthContext.Provider>
-    );
-}
+  return (
+    <AuthContext.Provider value={value}>
+      {!getUserRequestInProgress && children}
+    </AuthContext.Provider>
+  );
+};

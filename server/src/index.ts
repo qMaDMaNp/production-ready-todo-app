@@ -9,8 +9,6 @@ import routes from '@/routes';
 
 import ApiErrorMiddleware from "@middlewares/ApiErrorMiddleware";
 
-console.log('bebe11');
-
 const server = express();
 const PORT = 4444;
 let app = null;

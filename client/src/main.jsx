@@ -1,8 +1,9 @@
 import './scss/main.scss';
 
 import { createRoot } from 'react-dom/client';
-import { ThemeContextProvider } from "@/theme/ThemeContextProvider";
+
 import AuthProvider from './providers/AuthProvider';
+import { ThemeContextProvider } from "@/theme/ThemeContextProvider";
 import { SnackStackProvider } from '@views/components/SnackbarComponent';
 
 import RootLayout from '@views/layouts/RootLayout';

@@ -18,6 +18,4 @@ export const ThemeContextProvider = ({ children }) => {
     );
 };
 
-export const useThemeContext = () => {
-    return useContext(ThemeContext);
-};
+export const useThemeContext = () => useContext(ThemeContext);

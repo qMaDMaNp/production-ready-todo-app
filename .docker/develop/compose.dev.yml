@@ -24,8 +24,8 @@ services:
     ports:
       - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
     volumes:
-      - todo-db:/data/db
+      - todo-dev-db:/data/db
 
 volumes:
-  todo-db:
+  todo-dev-db:
 

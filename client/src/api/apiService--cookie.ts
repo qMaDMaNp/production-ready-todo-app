@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 const api = axios.create({
   baseURL: 'http://localhost:4444/api',
   timeout: 10000,
@@ -14,56 +13,43 @@ let isRefreshing = false;
 let refreshSubscribers = [];
 
 const onRefreshed = (token) => {
-  refreshSubscribers.map((callback) => callback(token));
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
 };
 
 const addRefreshSubscriber = (callback) => {
   refreshSubscribers.push(callback);
 };
 
-// Add auth token to request headers
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-
-  return config;
-},
-  error => Promise.reject(error)
-);
-
 // Response interceptor to handle errors
 api.interceptors.response.use(
   response => response,
   async error => {
-    const {
-      config: originalRequest,
-      response
-    } = error;
+    const { config: originalRequest, response } = error;
 
     if (response) {
-      // Handle errors based on status code
       const { status } = response;
 
-      if (status === 401) {
-        // Unauthorized access, handle logout or token refresh
+      if (status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+
         if (!isRefreshing) {
           isRefreshing = true;
 
           try {
-            const refreshToken = localStorage.getItem('refreshToken');
-            const { data } = await axios.post(`${api.defaults.baseURL}/auth/refresh-token`, { refreshToken }, { withCredentials: true });
-
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('refreshToken', data.refreshToken);
-
+            const { data } = await axios.post(`${api.defaults.baseURL}/auth/refresh-token`, {}, { withCredentials: true });
+            
             isRefreshing = false;
             onRefreshed(data.token);
+
+            return api(originalRequest);
           } 
           catch (err) {
             isRefreshing = false;
             refreshSubscribers = [];
 
+            // You can redirect to login
+            // We've deleted cookies on serverver
             window.location.reload();
 
             return Promise.reject(err);
@@ -72,11 +58,10 @@ api.interceptors.response.use(
 
         return new Promise((resolve) => {
           addRefreshSubscriber((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            resolve(axios(originalRequest));
+            resolve(api(originalRequest));
           });
         });
-      }
+      } 
       else if (status === 403) {
         // Forbidden access
       }
@@ -92,16 +77,9 @@ api.interceptors.response.use(
   }
 );
 
-
 const get = (url, params = {}) => api.get(url, { params });
 const post = (url, data = {}) => api.post(url, data);
 const put = (url, data) => api.put(url, data);
 const del = (url) => api.delete(url);
 
-
-export {
-  get,
-  post,
-  put,
-  del
-};
+export { get, post, put, del };
