@@ -10,7 +10,58 @@ import * as TodoListItemController from '@controllers/TodoListItemController';
 
 const router = Router();
 
-router.get("/ping", (req, res) => res.status(200).json({ response: "pong" }));
+router.get("/ping", (req, res) => {
+    //@ts-ignore
+    console.log(req.session, req.session.id);
+    //@ts-ignore
+    req.session.visited = true;
+
+    res.status(200).json({ response: "pong" })
+});
+
+const userList = [
+    { id: 1, username: 'pewpew', password: 'passwordBebe' },
+    { id: 2, username: 'pewpew1', password: 'passwordBebe1' },
+    { id: 3, username: 'pewpew2', password: 'passwordBebe2' }
+];
+
+router.post("/auth", (req, res) => {
+    const {
+        body: { username, password }
+    } = req;
+
+    const findUser = userList.find(x => x.username === username);
+
+    if (!findUser || findUser.password !== password) return res.status(401).send({ msg: 'Bad Credentials' });
+
+    req.session.user = findUser;
+    res.status(200).send(findUser);
+});
+
+
+router.post("/auth/status", (req, res) => {
+    console.log(req.sessionStore);
+    req.sessionStore.get(req.sessionID, (err, session) => {
+        console.log(session);
+    });
+
+    req.session.user
+        ? res.status(200).send({ id: req.session.user.id })
+        : res.status(401).send({ msg: 'Bad Credentials' });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //TodoLists
 router.get('/todo-lists', AuthMiddleware.authMiddleware, TodoListController.show);

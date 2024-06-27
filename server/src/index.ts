@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
 import * as bodyParser from 'body-parser';
 
 import DB from '@db/index';
@@ -31,7 +32,16 @@ server.use(cors({
 
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
-server.use(cookieParser());
+// server.use(cookieParser('dev test change later')); //used to sign a cookie, so move to env
+server.use(session({
+    secret: 'dev test change later', //used to sign a cookie, so move to env
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+        maxAge: 60000 * 60,
+    }
+}));
+
 // server.use('/files', express.static(path.resolve("/services/files-storage")));
 // server.use('/avatars', express.static(path.resolve("/services/files-storage/avatars")));
 

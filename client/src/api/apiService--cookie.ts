@@ -42,6 +42,7 @@ api.interceptors.response.use(
             isRefreshing = false;
             onRefreshed(data.token);
 
+            //TODO: remove and leave the one on line 60?
             return api(originalRequest);
           } 
           catch (err) {
