@@ -3,12 +3,14 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
+import passport from 'passport';
 import * as bodyParser from 'body-parser';
 
 import DB from '@db/index';
 import routes from '@/routes';
 
 import ApiErrorMiddleware from "@middlewares/ApiErrorMiddleware";
+import "@/strategies/local-strategy";
 
 const server = express();
 const PORT = 4444;
@@ -32,7 +34,7 @@ server.use(cors({
 
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
-// server.use(cookieParser('dev test change later')); //used to sign a cookie, so move to env
+server.use(cookieParser('dev test change later')); //used to sign a cookie, so move to env
 server.use(session({
     secret: 'dev test change later', //used to sign a cookie, so move to env
     saveUninitialized: false,
@@ -41,6 +43,9 @@ server.use(session({
         maxAge: 60000 * 60,
     }
 }));
+
+server.use(passport.initialize());
+server.use(passport.session());
 
 // server.use('/files', express.static(path.resolve("/services/files-storage")));
 // server.use('/avatars', express.static(path.resolve("/services/files-storage/avatars")));

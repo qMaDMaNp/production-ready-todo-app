@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import passport from 'passport';
 
 import AuthMiddleware from '@middlewares/authMiddleware';
 
@@ -7,6 +8,7 @@ import * as AuthController from '@controllers/AuthController';
 
 import * as TodoListController from '@controllers/TodoListController';
 import * as TodoListItemController from '@controllers/TodoListItemController';
+
 
 const router = Router();
 
@@ -25,31 +27,26 @@ const userList = [
     { id: 3, username: 'pewpew2', password: 'passwordBebe2' }
 ];
 
-router.post("/auth", (req, res) => {
-    const {
-        body: { username, password }
-    } = req;
-
-    const findUser = userList.find(x => x.username === username);
-
-    if (!findUser || findUser.password !== password) return res.status(401).send({ msg: 'Bad Credentials' });
-
-    req.session.user = findUser;
-    res.status(200).send(findUser);
+router.post("/auth", passport.authenticate('local'),  (req, res) => {
+    res.status(200).send('ok');
 });
 
 
-router.post("/auth/status", (req, res) => {
-    console.log(req.sessionStore);
-    req.sessionStore.get(req.sessionID, (err, session) => {
-        console.log(session);
-    });
-
-    req.session.user
-        ? res.status(200).send({ id: req.session.user.id })
+router.get("/auth/status", (req, res) => {
+    req.user
+        ? res.status(200).send(req.user)
         : res.status(401).send({ msg: 'Bad Credentials' });
 });
 
+
+router.post("/auth/logout", (req, res) => {
+	if (!req.user) return res.sendStatus(401);
+console.log(req.logout);
+	req.logout((e) => {
+		if (e) return res.sendStatus(400);
+		res.send(200);
+	});
+});
 
 
 
