@@ -1,55 +1,55 @@
+import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 import { RequestHandler } from 'express';
-import UserService from '@services/UserService';
-import { ApiError } from '@lib/BaseError';
+
+import { User } from '@db/models/User';
+import UserResource from '@resources/UserResource';
+
 
 export const login: RequestHandler = async (req, res) => {
+    res.status(200).send('Login success');
+};
+
+export const register: RequestHandler = async (req, res, next) => {
     try {
-      const { email, password } = req.body;
-      const userData = await UserService.login(email, password);
+        const { email, password } = req.body;
 
-      if (!userData) ApiError.BadRequest('Authentication failed');
+        const activationLink = uuidv4();
+        const hashPassword = await bcrypt.hash(password, 6);
 
-      res.cookie("refreshToken", userData.refreshToken, { 
-        maxAge: 30 * 24 * 60 * 60 * 1000 , 
-        httpOnly: true,
-        secure: false //when https make true
-      });
+        const user = await User.create({ email, password: hashPassword, activationLink });
 
-      return res.json(userData);
-    } 
-    catch (e) {
-      res.status(500).send(e);
+        // await MailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
+
+        req.login(user, (e) => {
+            if (e) return res.status(500).send('Registration failed');
+
+            res.status(200).send('Register success');
+        })
     }
-  };
+    catch (e) {
+        res.status(500).send(e);
+    }
+};
 
-  export const registration: RequestHandler = async (req, res ) => {
+export const logout: RequestHandler = async (req, res) => {
+    req.session.destroy((e) => {
+        if (e) return res.status(500).send(e);
+
+        res.clearCookie('connect.sid', { path: '/' });
+        res.status(200).send('Logout success');
+    });
+};
+
+export const getUser: RequestHandler = async (req: any, res) => {
     try {
-      const { email, password } = req.body;
-      const userData = await UserService.registration(email, password);
+        const user = await User.findById(req.user.id);
 
-      res.cookie("refreshToken", userData.refreshToken, { 
-        maxAge: 30 * 24 * 60 * 60 * 1000 , 
-        httpOnly: true,
-        secure: false //when https make true
-      });
-      
-      return res.json(userData);
-    } 
-    catch (e) {
-      res.status(500).send(e);
+        if (!user) throw new Error('Bad Credentials');
+
+        res.status(200).json(new UserResource(user));
     }
-  };
-
-  export const logout: RequestHandler = async (req, res) => {
-    try {
-      const { refreshToken } = req.cookies;
-      const token = await UserService.logout(refreshToken);
-
-      res.clearCookie("refreshToken", { maxAge: 0, httpOnly: true });
-
-      return res.json(token);
-    } 
     catch (e) {
-      res.status(500).send(e);
+        res.status(500).send(e);
     }
-  };
+};
