@@ -1,8 +1,8 @@
-import bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
+import { uuidv4 } from '@/lib/utils';
 import { RequestHandler } from 'express';
 
 import { User } from '@db/models/User';
+import PasswordHandler from '@lib/PasswordHandler';
 import UserResource from '@resources/UserResource';
 
 
@@ -14,10 +14,9 @@ export const register: RequestHandler = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
-        const activationLink = uuidv4();
-        const hashPassword = await bcrypt.hash(password, 6);
+        const hashedPassword = await PasswordHandler.hash(password);
 
-        const user = await User.create({ email, password: hashPassword, activationLink });
+        const user = await User.create({ email, password: hashedPassword });
 
         // await MailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 

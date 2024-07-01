@@ -25,8 +25,4 @@ export class ApiError extends Error {
   static BadRequest(message: string, errors: ValidationError[] = []): ApiError {
     return new ApiError(400, message, errors);
   }
-
-  static InvalidRefreshTokenData(message?: string): ApiError {
-    return new ApiError(400, message || 'Invalid refresh token data');
-  }
 };

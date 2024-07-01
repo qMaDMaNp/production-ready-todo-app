@@ -1,9 +1,9 @@
-import bcrypt from 'bcrypt';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 
 import { User } from '@db/models/User';
 import { ApiError } from '@lib/BaseError';
+import PasswordHandler from '@lib/PasswordHandler';
 
 
 passport.serializeUser((user: any, done) => {
@@ -22,15 +22,11 @@ export default passport.use(
             console.log('Login attempt')
             const user = await User.findOne({ email });
 
-            if (!user) {
-                throw ApiError.BadRequest('User with this email was not found');
-            }
+            if (!user) throw ApiError.BadRequest('User with this email was not found');
 
-            const isMatch = await bcrypt.compare(password, user.password);
+            const isMatch = await PasswordHandler.compare(password, user.password);
 
-            if (!isMatch) {
-                throw ApiError.BadRequest('Invalid password');
-            }
+            if (!isMatch) throw ApiError.BadRequest('Invalid password');
 
             done(null, user);
         }

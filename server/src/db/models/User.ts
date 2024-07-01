@@ -5,8 +5,6 @@ export interface UserDocument extends Document {
     firstName?: string;
     lastName?: string;
     password: string;
-    isActivated: boolean;
-    activationLink?: string;
     changedAt: Date;
     createdAt: Date;
     deletedAt: Date;
@@ -27,13 +25,6 @@ export interface UserDocument extends Document {
     password: {
         type: String,
         required: true
-    },
-    isActivated: {
-        type: Boolean,
-        default: false
-    },
-    activationLink: {
-        type : String,
     },
     createdAt: {
         type: Date,
