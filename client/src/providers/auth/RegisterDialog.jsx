@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 
 import {
     Avatar,
@@ -12,14 +12,13 @@ import {
     Typography,
     Dialog,
     Grid,
-    Paper,
-    Container
+    Paper
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
-import { AuthContext } from '../../providers/AuthProvider';
+import { useAuth } from './AuthProvider';
 
 function Copyright(props) {
     return (
@@ -34,8 +33,8 @@ function Copyright(props) {
     );
 }
 
-export default function RegisterModal() {
-    const { register } = useContext(AuthContext);
+export default function RegisterDialog() {
+    const { register } = useAuth();
     const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => {

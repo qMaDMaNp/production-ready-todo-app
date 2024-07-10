@@ -8,6 +8,8 @@ export const ThemeContext = createContext({
     theme: createTheme(),
 });
 
+export const useThemeContext = () => useContext(ThemeContext);
+
 export const ThemeContextProvider = ({ children }) => {
     const value = useColorTheme();
 
@@ -17,5 +19,3 @@ export const ThemeContextProvider = ({ children }) => {
         </ThemeContext.Provider>
     );
 };
-
-export const useThemeContext = () => useContext(ThemeContext);

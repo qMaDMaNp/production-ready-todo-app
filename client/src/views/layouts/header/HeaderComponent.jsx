@@ -21,7 +21,7 @@ import {
 
 import { grey } from '@mui/material/colors';
 
-import { useThemeContext } from "@/theme/ThemeContextProvider";
+import { useThemeContext } from "@/providers/theme/ThemeContextProvider";
 
 import ProfileMenu from './ProfileMenu';
 
@@ -41,6 +41,7 @@ export default function HeaderComponent() {
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
     };
+    
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
@@ -154,9 +155,9 @@ export default function HeaderComponent() {
                         </IconButton>
                     </Box>
 
-                    {/* <Box ml={1}>
+                    <Box ml={1}>
                         <ProfileMenu />
-                    </Box> */}
+                    </Box>
                 </Toolbar>
             </Container>
         </AppBar>

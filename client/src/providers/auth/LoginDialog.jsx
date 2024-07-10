@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 
 import {
   Avatar,
@@ -21,7 +21,7 @@ import {
   Close as CloseIcon
 } from '@mui/icons-material';
 
-import { AuthContext } from '../../providers/AuthProvider';
+import { useAuth } from './AuthProvider';
 
 function Copyright(props) {
   return (
@@ -36,9 +36,9 @@ function Copyright(props) {
   );
 }
 
-export default function LoginModal() {
-  const { login } = useContext(AuthContext);
-  
+export default function LoginDialog() {
+  const { login } = useAuth();
+
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -53,10 +53,10 @@ export default function LoginModal() {
     e.preventDefault();
 
     const data = new FormData(e.currentTarget);
-    const email = data.get('email').toString();
-    const password = data.get('password').toString();
+    const email = data.get('email').toString().trim();
+    const password = data.get('password').toString().trim();
 
-    await login(email, password);
+    await login({email, password});
   };
 
   return (
@@ -98,6 +98,7 @@ export default function LoginModal() {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
+            
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"

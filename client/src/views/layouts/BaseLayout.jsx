@@ -1,7 +1,8 @@
 import Container from '@mui/material/Container';
 import HeaderComponent from '@views/layouts/header/HeaderComponent';
 import FooterComponent from '@views/layouts/footer/FooterComponent';
-import { useThemeContext } from "@/theme/ThemeContextProvider";
+
+import { useThemeContext } from "@/providers/theme/ThemeContextProvider";
 import { grey } from '@mui/material/colors';
 
 export default function BaseLayout({ children }) {

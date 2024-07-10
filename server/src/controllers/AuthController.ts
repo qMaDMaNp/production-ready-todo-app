@@ -7,7 +7,8 @@ import UserResource from '@resources/UserResource';
 
 
 export const login: RequestHandler = async (req, res) => {
-    res.status(200).send('Login success');
+    //@ts-ignore
+    res.status(200).send(new UserResource(req.user));
 };
 
 export const register: RequestHandler = async (req, res, next) => {
@@ -40,8 +41,14 @@ export const logout: RequestHandler = async (req, res) => {
     });
 };
 
+//This route is used by the client to get user data
+//If cookie req.user is not provided, user is not provided
+//Error is also not provided because it's a wanted behaviour
+//Not a user, not a problem
 export const getUser: RequestHandler = async (req: any, res) => {
     try {
+        if (!req.user) return res.status(200).send('');
+
         const user = await User.findById(req.user.id);
 
         if (!user) throw new Error('Bad Credentials');

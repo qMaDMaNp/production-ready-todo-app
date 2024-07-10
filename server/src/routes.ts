@@ -30,7 +30,7 @@ router.put('/todo-list-items/:id', AuthMiddleware.isUser, TodoListItemController
 router.delete('/todo-list-items/:id', AuthMiddleware.isUser, TodoListItemController.remove);
 
 //Auth
-router.get('/auth/user', AuthMiddleware.isUser, AuthController.getUser);
+router.get('/auth/user', AuthController.getUser);
 router.post('/auth/login', loginRequestRule, AuthController.login);
 router.post('/auth/register', registerRequestRule, AuthController.register);
 router.post('/auth/logout', AuthMiddleware.isUser, AuthController.logout);

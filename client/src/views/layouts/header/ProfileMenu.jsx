@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 
 import {
     Avatar,
@@ -19,16 +19,15 @@ import {
 
 import { blue } from '@mui/material/colors';
 
-import { AuthContext } from '../../../providers/AuthProvider';
-import LoginModal from '../../components/LoginModal';
-import RegisterModal from '../../components/RegisterModal';
+import { useAuth } from '@providers/auth/AuthProvider';
+import LoginDialog from '@providers/auth/LoginDialog';
+import RegisterDialog from '@providers/auth/RegisterDialog';
 
 export default function ProfileMenu() {
     const { 
         user, 
-        isAuth,
         logout
-    } = useContext(AuthContext); 
+    } = useAuth(); 
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -40,16 +39,16 @@ export default function ProfileMenu() {
         setAnchorEl(null);
     };
 
-    if (!isAuth) {
+    if (!user) {
         return (
             <>
-                <LoginModal />
-                <RegisterModal />
+                <LoginDialog />
+                <RegisterDialog />
             </>
         );
     };
 
-    const firstEmailLetter = isAuth ? user.email.slice(0, 1).toUpperCase() : null;
+    const firstEmailLetter = (user && Object.keys(user).length) ? user.email.slice(0, 1).toUpperCase() : null;
 
     return (
         <>

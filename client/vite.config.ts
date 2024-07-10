@@ -8,8 +8,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@providers': fileURLToPath(new URL('./src/providers', import.meta.url)),
       '@views': fileURLToPath(new URL('./src/views', import.meta.url)),
       '@api': fileURLToPath(new URL('./src/api', import.meta.url)),
+      '@lib': fileURLToPath(new URL('./src/lib', import.meta.url)),
     },
     extensions: [
       '.js',
