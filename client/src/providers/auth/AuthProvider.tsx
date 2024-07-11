@@ -15,6 +15,7 @@ export const useAuth = () => useContext(AuthContext);
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(authHelper.getUserStorageData() || null);
   const [getUserRequestInProgress, setGetUserRequestInProgress] = useState(false);
+  const isAuth = !!(user && Object.keys(user).length);
 
   useEffect(() => {
     const getUserSession = async () => {
@@ -83,6 +84,7 @@ export default function AuthProvider({ children }) {
   const value = {
     user,
     getUserRequestInProgress,
+    isAuth,
 
     login,
     logout,

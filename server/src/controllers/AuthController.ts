@@ -24,7 +24,7 @@ export const register: RequestHandler = async (req, res, next) => {
         req.login(user, (e) => {
             if (e) return res.status(500).send('Registration failed');
 
-            res.status(200).send('Register success');
+            res.status(200).send(new UserResource(user));
         })
     }
     catch (e) {

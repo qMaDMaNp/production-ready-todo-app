@@ -53,7 +53,7 @@ export default function RegisterDialog() {
             const email = data.get('email').toString();
             const password = data.get('password').toString();
 
-            await register(email, password);
+            await register({email, password});
             window.location.reload();
         }
         catch (e) {
@@ -94,35 +94,12 @@ export default function RegisterDialog() {
                             alignItems: 'center',
                         }}
                     >
-                        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                            <LockOutlinedIcon />
-                        </Avatar>
                         <Typography component="h1" variant="h5">
-                            Sign up
+                            Sign Up
                         </Typography>
+
                         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                             <Grid container spacing={2}>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        autoComplete="given-name"
-                                        name="firstName"
-                                        required
-                                        fullWidth
-                                        id="firstName"
-                                        label="First Name"
-                                        autoFocus
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="lastName"
-                                        label="Last Name"
-                                        name="lastName"
-                                        autoComplete="family-name"
-                                    />
-                                </Grid>
                                 <Grid item xs={12}>
                                     <TextField
                                         required

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link as RouterLink } from "react-router-dom";
 
 import {
     AppBar,
@@ -41,7 +42,7 @@ export default function HeaderComponent() {
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
     };
-    
+
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
@@ -58,13 +59,11 @@ export default function HeaderComponent() {
         <AppBar position="static" sx={{ position: 'relative', top: 'auto', bottom: 0, bgcolor: grey[900], backgroundImage: 'none' }}>
             <Container maxWidth={false}>
                 <Toolbar disableGutters>
-                    <EngineeringTwoToneIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-
                     <Typography
                         variant="h6"
                         noWrap
-                        component="a"
-                        href="/"
+                        component={RouterLink}
+                        to="/"
                         sx={{
                             mr: 2,
                             display: { xs: 'none', md: 'flex' },
@@ -75,6 +74,7 @@ export default function HeaderComponent() {
                             textDecoration: 'none',
                         }}
                     >
+                        <EngineeringTwoToneIcon sx={{ display: { xs: 'none', md: 'flex' }, alignSelf: 'center', mr: 1 }} />
                         ProductionTodo
                     </Typography>
 
@@ -115,13 +115,11 @@ export default function HeaderComponent() {
                         </Menu>
                     </Box>
 
-                    <EngineeringTwoToneIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-
                     <Typography
                         variant="h5"
                         noWrap
-                        component="a"
-                        href="/"
+                        component={RouterLink}
+                        to="/"
                         sx={{
                             mr: 2,
                             display: { xs: 'flex', md: 'none' },
@@ -133,6 +131,7 @@ export default function HeaderComponent() {
                             textDecoration: 'none',
                         }}
                     >
+                        <EngineeringTwoToneIcon sx={{ display: { xs: 'flex', md: 'none' }, alignSelf: 'center', mr: 1 }} />
                         ProductionTodo
                     </Typography>
 

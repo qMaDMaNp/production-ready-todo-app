@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link as RouterLink } from "react-router-dom";
 
 import {
     Avatar,
@@ -20,14 +21,17 @@ import {
 import { blue } from '@mui/material/colors';
 
 import { useAuth } from '@providers/auth/AuthProvider';
+
 import LoginDialog from '@providers/auth/LoginDialog';
 import RegisterDialog from '@providers/auth/RegisterDialog';
 
+
 export default function ProfileMenu() {
-    const { 
-        user, 
+    const {
+        isAuth,
+        user,
         logout
-    } = useAuth(); 
+    } = useAuth();
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -39,7 +43,7 @@ export default function ProfileMenu() {
         setAnchorEl(null);
     };
 
-    if (!user) {
+    if (!isAuth) {
         return (
             <>
                 <LoginDialog />
@@ -48,7 +52,7 @@ export default function ProfileMenu() {
         );
     };
 
-    const firstEmailLetter = (user && Object.keys(user).length) ? user.email.slice(0, 1).toUpperCase() : null;
+    const firstEmailLetter = isAuth ? user.email.slice(0, 1).toUpperCase() : null;
 
     return (
         <>
@@ -58,11 +62,11 @@ export default function ProfileMenu() {
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
             >
-                <Avatar sx={{ 
+                <Avatar sx={{
                     width: 32,
                     height: 32,
                     bgcolor: blue[500]
-                    }}
+                }}
                 >
                     {firstEmailLetter}
                 </Avatar>
@@ -106,25 +110,21 @@ export default function ProfileMenu() {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                {/* <a href="/" as="li"> */}
-                <MenuItem onClick={handleClose}>
+                <MenuItem component={RouterLink} to="/profile">
                     <ListItemIcon>
                         <PersonIcon fontSize="small" />
                     </ListItemIcon>
                     Profile
                 </MenuItem>
-                {/* </a> */}
 
-                <Link href="/dashboard">
-                    <MenuItem onClick={handleClose}>
-                        <ListItemIcon>
-                            <LinkIcon fontSize="small" />
-                        </ListItemIcon>
-                        Dashboard
-                    </MenuItem>
-                </Link>
+                <MenuItem component={RouterLink} to="/dashboard">
+                    <ListItemIcon>
+                        <LinkIcon fontSize="small" />
+                    </ListItemIcon>
+                    Dashboard
+                </MenuItem>
 
-                <MenuItem onClick={handleClose}>
+                <MenuItem>
                     <ListItemIcon>
                         <EmailIcon fontSize="small" />
                     </ListItemIcon>
