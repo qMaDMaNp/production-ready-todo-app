@@ -3,9 +3,7 @@ import TodoListItemService from '@services/TodoListItemService';
 
 export async function show(req, res) {
   try {
-    const todoListId = req.todoListId;
-
-    const todoLists = await TodoListItemService.getAll(todoListId);
+    const todoLists = await TodoListItemService.getAll(req.todoListId);
 
     if (!todoLists || todoLists.length === 0) {
       return res.status(404).send('No todoLists found for user');
@@ -20,9 +18,7 @@ export async function show(req, res) {
 
 export async function showOne(req: Request, res: Response) {
   try {
-    const todoListItemId = req.params.id;
-
-    const todoList = await TodoListItemService.getTodoListItem(todoListItemId);
+    const todoList = await TodoListItemService.getTodoListItem(req.params.id);
 
     if (!todoList) {
       return res.status(404).send('TodoList not found');
@@ -37,12 +33,10 @@ export async function showOne(req: Request, res: Response) {
 
 export async function create(req, res) {
   try {
-    const userId = req.user.id;
-
     const name = req.body.name.trim();
     const color = req.body.color;
 
-    const todoList = await TodoListItemService.createTodoListItem(name, userId, color);
+    const todoList = await TodoListItemService.createTodoListItem(name, req.user.id, color);
 
     res.status(200).json(todoList);
   }

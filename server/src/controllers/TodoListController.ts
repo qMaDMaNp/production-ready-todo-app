@@ -3,9 +3,7 @@ import TodoListService from '@services/TodoListService';
 
 export async function show(req, res) {
   try {
-    const userId = req.user.id;
-
-    const todoLists = await TodoListService.getAll(userId);
+    const todoLists = await TodoListService.getAll(req.user.id);
 
     if (!todoLists || todoLists.length === 0) {
       return res.status(404).send('No todoLists found for user');
@@ -20,9 +18,7 @@ export async function show(req, res) {
 
 export async function showOne(req: Request, res: Response) {
   try {
-    const todoListId = req.params.id;
-
-    const todoList = await TodoListService.getTodoList(todoListId);
+    const todoList = await TodoListService.getTodoList(req.params.id);
 
     if (!todoList) {
       return res.status(404).send('TodoList not found');
@@ -37,12 +33,10 @@ export async function showOne(req: Request, res: Response) {
 
 export async function create(req, res) {
   try {
-    const userId = req.user.id;
-
     const name = req.body.name.trim();
-    const color = req.body.color;
+    const color = req.body.color = '';
 
-    const todoList = await TodoListService.createTodoList(name, userId, color);
+    const todoList = await TodoListService.createTodoList(name, req.user.id, color);
 
     res.status(200).json(todoList);
   }
@@ -69,6 +63,8 @@ export async function update(req, res) {
 export async function remove(req, res) {
   try {
     const todoListId = req.params.id;
+
+    console.log(todoListId);
 
     await TodoListService.removeTodoList(todoListId);
 

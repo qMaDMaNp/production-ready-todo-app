@@ -59,9 +59,7 @@ export default function TodoList() {
 
     return (
         <Box>
-            <h1>To-Do List</h1>
-
-            <TextField
+            {/* <TextField
                 label="New Task"
                 variant="outlined"
                 fullWidth
@@ -71,7 +69,7 @@ export default function TodoList() {
 
             <Button variant="contained" color="primary" fullWidth onClick={addTask} style={{ marginTop: 10 }}>
                 Add Task
-            </Button>
+            </Button> */}
 
             <List>
                 {tasks.map((task, index) => (
