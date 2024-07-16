@@ -1,119 +1,134 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     Box,
     TextField,
     Button,
     List,
     ListItem,
+    ListItemButton,
     ListItemText,
-    IconButton,
-    Checkbox,
-    Input
+    Typography,
+    IconButton
 } from '@mui/material';
 
+import LoadingButton from '@mui/lab/LoadingButton';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+
 import {
-    Edit as EditIcon,
-    Delete as DeleteIcon,
-    Save as SaveIcon
-} from '@mui/icons-material/';
+    getTodoLists,
+    createTodoList,
+    removeTodoList
+} from '@api/todo';
 
 
 export default function TodoList() {
-    const [task, setTask] = useState('');
-    const [tasks, setTasks] = useState([]);
-    const [isEditing, setIsEditing] = useState(null);
-    const [currentTask, setCurrentTask] = useState('');
+    const [todoListName, setTodoListName] = useState('');
+    const [todoLists, setTodoLists] = useState([]);
+    const [requestInProgress, setRequestInProgress] = useState(false);
 
-    const addTask = () => {
-        if (task.trim()) {
-            setTasks([...tasks, { text: task, completed: false }]);
-            setTask('');
+    useEffect(() => {
+        const handleGetTodoLists = async () => {
+            try {
+                const res = await getTodoLists();
+                setTodoLists(res.data);
+            }
+            catch (err) {
+                console.error('Error getting todo lists', err);
+            }
+            finally {
+            }
+        };
+
+        handleGetTodoLists();
+    }, []);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const data = new FormData(e.currentTarget);
+
+        if (!data.get('name').length) return;
+
+        const name = data.get('name').trim();
+
+        setRequestInProgress(true);
+
+        try {
+            const res = await createTodoList({ name });
+            setTodoLists(prevVal => [res.data, ...prevVal]);
+            setTodoListName('');
+        }
+        catch (err) {
+            console.error('Error getting todo lists', err);
+        }
+        finally {
+            setRequestInProgress(false);
         }
     };
 
-    const deleteTask = (index) => {
-        const newTasks = tasks.filter((_, i) => i !== index);
-        setTasks(newTasks);
-    };
-
-    const toggleTaskCompletion = (index) => {
-        const newTasks = tasks.map((task, i) =>
-            i === index ? { ...task, completed: !task.completed } : task
-        );
-        setTasks(newTasks);
-    };
-
-    const editTask = (index) => {
-        setIsEditing(index);
-        setCurrentTask(tasks[index].text);
-    };
-
-    const saveTask = (index) => {
-        const newTasks = tasks.map((task, i) =>
-            i === index ? { ...task, text: currentTask } : task
-        );
-        setTasks(newTasks);
-        setIsEditing(null);
-        setCurrentTask('');
+    const handleRemoveList = async (listId) => {
+        try {
+            const res = await removeTodoList(listId);
+            setTodoLists(prevVal => prevVal.filter(x => x._id !== listId));
+        }
+        catch (err) {
+            console.error('Error removing todo lists', err);
+        }
+        finally {
+        }
     };
 
     return (
-        <Box>
-            {/* <TextField
-                label="New Task"
-                variant="outlined"
-                fullWidth
-                value={task}
-                onChange={(e) => setTask(e.target.value)}
-            />
+        <>
+            <Box component="form" noValidate onSubmit={handleSubmit}>
+                <TextField
+                    value={todoListName}
+                    onChange={e => setTodoListName(e.target.value)}
+                    name="name"
+                    label="Enter Task Name..."
+                    variant="outlined"
+                    fullWidth
+                />
 
-            <Button variant="contained" color="primary" fullWidth onClick={addTask} style={{ marginTop: 10 }}>
-                Add Task
-            </Button> */}
+                <LoadingButton
+                    sx={{ mt: 1 }}
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    type="submit"
+                    loading={requestInProgress}
+                >
+                    Create New List
+                </LoadingButton>
+            </Box>
 
-            <List>
-                {tasks.map((task, index) => (
-                    <ListItem key={index} dense>
-                        <Checkbox
-                            checked={task.completed}
-                            onChange={() => toggleTaskCompletion(index)}
-                        />
-                        {isEditing === index ? (
-                            <Input
-                                fullWidth
-                                value={currentTask}
-                                onChange={(e) => setCurrentTask(e.target.value)}
-                                onBlur={() => saveTask(index)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        saveTask(index);
-                                    }
-                                }}
-                                autoFocus
-                            />
-                        ) : (
-                            <ListItemText
-                                primary={task.text}
-                                style={{ textDecoration: task.completed ? 'line-through' : 'none' }}
-                            />
-                        )}
+            <List sx={{ mt: 1, width: '100%', bgcolor: 'background.paper' }}>
+                {todoLists.map((list, index) => {
+                    const listId = `list-${list._id}`;
 
-                        <IconButton sx={{ mr: 1 }} edge="end" aria-label="edit" onClick={() => editTask(index)}>
-                            <EditIcon />
-                        </IconButton>
-
-                        <IconButton edge="end" aria-label="delete" onClick={() => deleteTask(index)}>
-                            <DeleteIcon />
-                        </IconButton>
-
-                        {isEditing === index && (
-                            <IconButton sx={{ ml: 1 }} edge="end" aria-label="save" onClick={() => saveTask(index)}>
-                                <SaveIcon />
-                            </IconButton>
-                        )}
-                    </ListItem>
-                ))}
+                    return (
+                        <ListItem
+                            key={listId}
+                            secondaryAction={
+                                <IconButton onClick={() => handleRemoveList(list._id)} color="error">
+                                    <DeleteTwoToneIcon />
+                                </IconButton>
+                            }
+                            disablePadding
+                        >
+                            <ListItemButton>
+                                <ListItemText id={listId} primary={list.name} />
+                            </ListItemButton>
+                        </ListItem>
+                    );
+                })}
+                {!todoLists.length &&
+                    <Typography mt={1} variant="body1" textAlign="center">
+                        No lists found
+                    </Typography>
+                }
             </List>
-        </Box>
+        </>
     );
 }

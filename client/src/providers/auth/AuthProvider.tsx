@@ -50,7 +50,6 @@ export default function AuthProvider({ children }) {
 
   const login = async (credentials) => {
     try {
-      console.log(credentials);
       const res = await loginUser(credentials);
       handleUserChange(res.data);
     }

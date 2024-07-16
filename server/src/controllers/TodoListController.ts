@@ -4,11 +4,6 @@ import TodoListService from '@services/TodoListService';
 export async function show(req, res) {
   try {
     const todoLists = await TodoListService.getAll(req.user.id);
-
-    if (!todoLists || todoLists.length === 0) {
-      return res.status(404).send('No todoLists found for user');
-    }
-
     res.status(200).json(todoLists);
   }
   catch (e) {
@@ -64,11 +59,9 @@ export async function remove(req, res) {
   try {
     const todoListId = req.params.id;
 
-    console.log(todoListId);
-
     await TodoListService.removeTodoList(todoListId);
 
-    res.status(200).send('TodoList has been removed');
+    res.status(200).send();
   }
   catch (e) {
     res.status(500).send(e);

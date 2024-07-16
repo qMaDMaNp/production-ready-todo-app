@@ -3,7 +3,7 @@ import { TodoListItem, TodoListItemDocument } from '@db/models/TodoListItem';
 
 class TodoListService {
     async getAll(userId: string): Promise<TodoListDocument[]> {
-        const todoLists = await TodoList.find({ userId });
+        const todoLists = await TodoList.find({ userId, deletedAt: { $exists: false } }).sort({ createdAt: -1 });
         return todoLists;
     }
 
@@ -31,7 +31,7 @@ class TodoListService {
 
     async updateOrCreateTodoListItems(todoListId, symbolId, actionName): Promise<TodoListItemDocument> {
         let todoListItem = null;
-        
+
         const actions = {
             add: async () => {
                 todoListItem = await TodoListItem.findOneAndUpdate(

@@ -5,8 +5,8 @@ import {
 } from '@mui/material';
 
 import BaseLayout from '@views/layouts/BaseLayout';
-import TodoListList from './page-components/dashboard-page/TodoListList';
 import TodoList from './page-components/dashboard-page/TodoList';
+import TodoItemList from './page-components/dashboard-page/TodoItemList';
 
 
 export default function DashboardPage() {
@@ -21,13 +21,13 @@ export default function DashboardPage() {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <Grid container justifyContent="center">
-                            <Grid item xs={6}>
-                                <TodoListList/>
+                        <Grid container justifyContent="space-between">
+                            <Grid item xs={3}>
+                                <TodoList />
                             </Grid>
 
                             <Grid item xs={6}>
-                                <TodoList />
+                                <TodoItemList />
                             </Grid>
                         </Grid>
                     </Grid>
