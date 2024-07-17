@@ -1,8 +1,8 @@
 import { TodoListItem, TodoListItemDocument } from '@db/models/TodoListItem';
 
 class TodoListItemService {
-    async getAll(todoListId: string): Promise<TodoListItemDocument[]> {
-        const todoListItems = await TodoListItem.find({ todoListId });
+    async getAll(userId: string, todoListId: string): Promise<TodoListItemDocument[]> {
+        const todoListItems = await TodoListItem.find({ userId, todoListId, deletedAt: { $exists: false } }).sort({ createdAt: -1 });
         return todoListItems;
     }
 

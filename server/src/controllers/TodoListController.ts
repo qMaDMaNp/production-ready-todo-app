@@ -1,4 +1,4 @@
-import { Request, RequestHandler, Response } from 'express';
+import { Request, Response } from 'express';
 import TodoListService from '@services/TodoListService';
 
 export async function show(req, res) {

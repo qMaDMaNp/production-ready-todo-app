@@ -22,8 +22,8 @@ router.put('/todo-lists/:id', AuthMiddleware.isUser, TodoListController.update);
 router.delete('/todo-lists/:id', AuthMiddleware.isUser, TodoListController.remove);
 
 //TodoListItems
-router.get('/todo-list-items', AuthMiddleware.isUser, TodoListItemController.show);
-router.get('/todo-list-items/:id', AuthMiddleware.isUser, TodoListItemController.showOne);
+router.get('/todo-list-items/:listId', AuthMiddleware.isUser, TodoListItemController.show);
+router.get('/todo-list-items/:listId/:id', AuthMiddleware.isUser, TodoListItemController.showOne);
 
 router.post('/todo-list-items', AuthMiddleware.isUser, TodoListItemController.create);
 router.put('/todo-list-items/:id', AuthMiddleware.isUser, TodoListItemController.update);

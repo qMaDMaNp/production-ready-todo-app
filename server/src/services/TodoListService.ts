@@ -1,14 +1,36 @@
 import { TodoList, TodoListDocument } from '@db/models/TodoList';
 import { TodoListItem, TodoListItemDocument } from '@db/models/TodoListItem';
 
+interface getAllParams {
+    userId: string;
+}
+
+interface getTodoListParams {
+    userId: string;
+    todoListId: string;
+}
+
+interface createTodoListParams {
+    userId: string;
+}
+
+interface updateTodoListParams {
+    userId: string;
+}
+
+interface removeTodoListParams {
+    userId: string;
+}
+
+
 class TodoListService {
-    async getAll(userId: string): Promise<TodoListDocument[]> {
+    async getAll({ userId }: getAllParams): Promise<TodoListDocument[]> {
         const todoLists = await TodoList.find({ userId, deletedAt: { $exists: false } }).sort({ createdAt: -1 });
         return todoLists;
     }
 
-    async getTodoList(todoListId: string) {
-        const todoList = await TodoList.findOne({ _id: todoListId });
+    async getTodoList({ userId, todoListId }: getTodoListParams) {
+        const todoList = await TodoList.findOne({ _id: todoListId, userId });
         const todoListItems = await TodoListItem.find({ todoListId });
 
         return { todoList, todoListItems };
@@ -27,47 +49,6 @@ class TodoListService {
         );
 
         return todoList;
-    }
-
-    async updateOrCreateTodoListItems(todoListId, symbolId, actionName): Promise<TodoListItemDocument> {
-        let todoListItem = null;
-
-        const actions = {
-            add: async () => {
-                todoListItem = await TodoListItem.findOneAndUpdate(
-                    { todoListId, symbolId },
-                    {
-                        $set: {
-                            changedAt: Date.now(),
-                            deletedAt: null
-                        }
-                    },
-                    { upsert: true, new: true }
-                );
-
-                return todoListItem;
-            },
-            remove: async () => {
-                todoListItem = await TodoListItem.updateOne(
-                    { todoListId, symbolId },
-                    {
-                        $set: {
-                            changedAt: Date.now(),
-                            deletedAt: Date.now()
-                        }
-                    },
-                    { new: true }
-                );
-
-                return todoListItem;
-            }
-        }
-
-        if (!actions[actionName]) return todoListItem;
-
-        await actions[actionName]();
-
-        return todoListItem;
     }
 
     async removeTodoList(todoListId: string): Promise<TodoListDocument> {

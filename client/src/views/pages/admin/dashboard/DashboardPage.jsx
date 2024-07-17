@@ -6,7 +6,6 @@ import {
 
 import BaseLayout from '@views/layouts/BaseLayout';
 import TodoList from './page-components/dashboard-page/TodoList';
-import TodoItemList from './page-components/dashboard-page/TodoItemList';
 
 
 export default function DashboardPage() {
@@ -21,15 +20,7 @@ export default function DashboardPage() {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <Grid container justifyContent="space-between">
-                            <Grid item xs={3}>
-                                <TodoList />
-                            </Grid>
-
-                            <Grid item xs={6}>
-                                <TodoItemList />
-                            </Grid>
-                        </Grid>
+                        <TodoList />
                     </Grid>
                 </Grid>
             </Box>

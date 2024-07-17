@@ -1,15 +1,10 @@
-import { Request, RequestHandler, Response } from 'express';
+import { Request, Response } from 'express';
 import TodoListItemService from '@services/TodoListItemService';
 
 export async function show(req, res) {
   try {
-    const todoLists = await TodoListItemService.getAll(req.todoListId);
-
-    if (!todoLists || todoLists.length === 0) {
-      return res.status(404).send('No todoLists found for user');
-    }
-
-    res.status(200).json(todoLists);
+    const todoListItems = await TodoListItemService.getAll(req.user.id, req.todoListId);
+    res.status(200).json(todoListItems);
   }
   catch (e) {
     res.status(500).send(e);
@@ -47,11 +42,10 @@ export async function create(req, res) {
 
 export async function update(req, res) {
   try {
-    const todoListItemId = req.params.id;
     const name = req.body.name;
     const color = req.body.color;
 
-    const todoList = await TodoListItemService.updateTodoListItem(todoListItemId, name, color);
+    const todoList = await TodoListItemService.updateTodoListItem(req.params.id, name, color);
 
     res.status(200).json(todoList);
   }
@@ -62,9 +56,7 @@ export async function update(req, res) {
 
 export async function remove(req, res) {
   try {
-    const todoListItemId = req.params.id;
-
-    await TodoListItemService.removeTodoListItem(todoListItemId);
+    await TodoListItemService.removeTodoListItem(req.params.id);
 
     res.status(200).send('TodoList has been removed');
   }

@@ -11,12 +11,12 @@ export const updateTodoList = (listId, listData) => put(`/todo-lists/${listId}`,
 export const removeTodoList = (listId) => del(`/todo-lists/${listId}`);
 
 
-export const getTodoListItems = () => get('/auth/user');
+export const getTodoListItems = (listId) => get(`/todo-list-items/${listId}`);
 
-export const getTodoListItem = () => get('/auth/user');
+export const getTodoListItem = (listItemId) => get(`/todo-list-items/${listItemId}`);
 
-export const createTodoListItem = (listItemData) => post('/auth/login', listItemData);
+export const createTodoListItem = (listItemData) => post('/todo-list-items', listItemData);
 
-export const updateTodoListItem = (listItemData) => put('/auth/login', listItemData);
+export const updateTodoListItem = (listItemId, listItemData) => put(`/todo-lists/${listItemId}`, listItemData);
 
-export const removeTodoListItem = (listItemId) => del('/auth/login', listItemId);
+export const removeTodoListItem = (listItemId) => del(`/todo-list-items/${listItemId}`);
