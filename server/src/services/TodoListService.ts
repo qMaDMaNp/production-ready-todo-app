@@ -1,5 +1,6 @@
 import { TodoList, TodoListDocument } from '@db/models/TodoList';
 import { TodoListItem, TodoListItemDocument } from '@db/models/TodoListItem';
+import { ObjectId } from 'mongodb';
 
 interface getAllParams {
     userId: string;
@@ -25,15 +26,15 @@ interface removeTodoListParams {
 
 class TodoListService {
     async getAll({ userId }: getAllParams): Promise<TodoListDocument[]> {
-        const todoLists = await TodoList.find({ userId, deletedAt: { $exists: false } }).sort({ createdAt: -1 });
+        const todoLists = await TodoList.find({ userId, deletedAt: { $exists: false } }).sort({ createdAt: -1 })
         return todoLists;
     }
-
+ 
     async getTodoList({ userId, todoListId }: getTodoListParams) {
-        const todoList = await TodoList.findOne({ _id: todoListId, userId });
-        const todoListItems = await TodoListItem.find({ todoListId });
+        // const todoList = await TodoList.findOne({ _id: todoListId, userId });
+        // const todoListItems = await TodoListItem.find({ todoListId });
 
-        return { todoList, todoListItems };
+        // return { todoList, todoListItems };
     }
 
     async createTodoList(name: string, userId: string, color: string): Promise<TodoListDocument> {

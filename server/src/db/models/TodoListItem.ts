@@ -1,7 +1,6 @@
 import { Schema, model, Document, Types } from 'mongoose';
 
 export interface TodoListItemDocument extends Document {
-    userId: Types.ObjectId;
     todoListId: Types.ObjectId;
     name: string;
     description: string;
@@ -12,11 +11,6 @@ export interface TodoListItemDocument extends Document {
 
 const TodoListItemSchema = new Schema(
     {
-        userId: {
-            type: Types.ObjectId,
-            required: true,
-            ref: 'User'
-        },
         todoListId: {
             type: Types.ObjectId,
             required: true,

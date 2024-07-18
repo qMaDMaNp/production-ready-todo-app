@@ -3,7 +3,7 @@ import TodoListItemService from '@services/TodoListItemService';
 
 export async function show(req, res) {
   try {
-    const todoListItems = await TodoListItemService.getAll(req.user.id, req.todoListId);
+    const todoListItems = await TodoListItemService.getAll(req.user.id, req.params.todoListId);
     res.status(200).json(todoListItems);
   }
   catch (e) {
@@ -29,7 +29,7 @@ export async function showOne(req: Request, res: Response) {
 export async function create(req, res) {
   try {
     const name = req.body.name.trim();
-    const color = req.body.color;
+    const color = req.body.color = '';
 
     const todoList = await TodoListItemService.createTodoListItem(name, req.user.id, color);
 
@@ -39,6 +39,7 @@ export async function create(req, res) {
     res.status(500).send(e);
   }
 }
+
 
 export async function update(req, res) {
   try {

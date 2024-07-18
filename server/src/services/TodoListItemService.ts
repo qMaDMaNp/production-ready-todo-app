@@ -1,8 +1,17 @@
 import { TodoListItem, TodoListItemDocument } from '@db/models/TodoListItem';
+import { ObjectId } from 'mongodb';
 
 class TodoListItemService {
     async getAll(userId: string, todoListId: string): Promise<TodoListItemDocument[]> {
-        const todoListItems = await TodoListItem.find({ userId, todoListId, deletedAt: { $exists: false } }).sort({ createdAt: -1 });
+        console.log(userId, todoListId);
+        const todoListItems = await TodoListItem.find({ todoListId, deletedAt: { $exists: false } })
+            .sort({ createdAt: -1 })
+            .populate('todoListId', 'userId');
+
+        if (todoListItems.length && !todoListItems[0].todoListId.userId.equals(userId)) {
+            throw 'Access denied';
+        }
+
         return todoListItems;
     }
 
@@ -11,8 +20,8 @@ class TodoListItemService {
         return todoListItem;
     }
 
-    async createTodoListItem(name: string, userId: string, color: string): Promise<TodoListItemDocument> {
-        const todoList = await TodoListItem.create({ name, userId, color });
+    async createTodoListItem(todoListId: string, name: string, userId: string, color: string): Promise<TodoListItemDocument> {
+        const todoList = await TodoListItem.create({ todoListId, name, userId, color });
         return todoList;
     }
 

@@ -3,8 +3,8 @@ import TodoListService from '@services/TodoListService';
 
 export async function show(req, res) {
   try {
-    const todoLists = await TodoListService.getAll(req.user.id);
-    res.status(200).json(todoLists);
+    const todoLists = await TodoListService.getAll({ userId: req.user.id });
+    res.status(200).json([todoLists]);
   }
   catch (e) {
     res.status(500).send(e);
@@ -13,7 +13,7 @@ export async function show(req, res) {
 
 export async function showOne(req: Request, res: Response) {
   try {
-    const todoList = await TodoListService.getTodoList(req.params.id);
+    const todoList = await TodoListService.getTodoList({ userId: req.params.id });
 
     if (!todoList) {
       return res.status(404).send('TodoList not found');
