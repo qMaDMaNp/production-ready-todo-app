@@ -34,6 +34,7 @@ export async function showItems(req, res) {
       userId: req.user.id,
       todoListId: req.params.id 
     });
+    
     res.status(200).json(todoListItems);
   }
   catch (e) {
