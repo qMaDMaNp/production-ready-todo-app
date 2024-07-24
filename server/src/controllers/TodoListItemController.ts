@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import TodoListItemService from '@services/TodoListItemService';
 
 
-export async function showOne(req: Request, res: Response) {
+export async function showOne(req, res) {
   try {
     const todoList = await TodoListItemService.getOne({
       userId: req.user.id,

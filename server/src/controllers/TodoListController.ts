@@ -12,7 +12,7 @@ export async function show(req, res) {
   }
 };
 
-export async function showOne(req: Request, res: Response) {
+export async function showOne(req, res) {
   try {
     const todoList = await TodoListService.getOne({ 
       userId: req.user.id,
