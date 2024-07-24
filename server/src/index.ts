@@ -57,9 +57,9 @@ class Main {
     }
 
     registerSessionMiddleware() {
-        this.server.use(cookieParser('dev test change later')); //used to sign a cookie, so move to env
+        this.server.use(cookieParser(process.env.COOKIE_SECRET));
         this.server.use(session({
-            secret: 'dev test change later', //used to sign a cookie, so move to env
+            secret: process.env.COOKIE_SECRET,
             saveUninitialized: false,
             resave: false,
             store: MongoSessionStore.create({
