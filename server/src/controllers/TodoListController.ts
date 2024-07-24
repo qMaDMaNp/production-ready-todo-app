@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import TodoListService from '@services/TodoListService';
+import TodoListItemService from '@services/TodoListItemService';
 
 export async function show(req, res) {
   try {
@@ -13,13 +14,27 @@ export async function show(req, res) {
 
 export async function showOne(req: Request, res: Response) {
   try {
-    const todoList = await TodoListService.getTodoList({ userId: req.params.id });
+    const todoList = await TodoListService.getOne({ 
+      userId: req.user.id,
+      todoListId: req.params.id 
+    });
 
-    if (!todoList) {
-      return res.status(404).send('TodoList not found');
-    }
+    if (!todoList) return res.status(404).send('TodoList not found');
 
     res.status(200).json(todoList);
+  }
+  catch (e) {
+    res.status(500).send(e);
+  }
+};
+
+export async function showItems(req, res) {
+  try {
+    const todoListItems = await TodoListItemService.getAll({ 
+      userId: req.user.id,
+      todoListId: req.params.id 
+    });
+    res.status(200).json(todoListItems);
   }
   catch (e) {
     res.status(500).send(e);
@@ -29,9 +44,13 @@ export async function showOne(req: Request, res: Response) {
 export async function create(req, res) {
   try {
     const name = req.body.name.trim();
-    const color = req.body.color = '';
+    const color = req.body.color || '';
 
-    const todoList = await TodoListService.createTodoList(name, req.user.id, color);
+    const todoList = await TodoListService.create({ 
+      userId: req.user.id, 
+      name, 
+      color
+    });
 
     res.status(200).json(todoList);
   }
@@ -42,11 +61,15 @@ export async function create(req, res) {
 
 export async function update(req, res) {
   try {
-    const todoListId = req.params.id;
     const name = req.body.name;
-    const color = req.body.color;
+    const color = req.body.color || '';
 
-    const todoList = await TodoListService.updateTodoList(todoListId, name, color);
+    const todoList = await TodoListService.update({
+      userId: req.user.id, 
+      todoListId: req.params.id,
+      name, 
+      color
+    });
 
     res.status(200).json(todoList);
   }
@@ -57,9 +80,10 @@ export async function update(req, res) {
 
 export async function remove(req, res) {
   try {
-    const todoListId = req.params.id;
-
-    await TodoListService.removeTodoList(todoListId);
+    await TodoListService.remove({
+      userId: req.user.id, 
+      todoListId: req.params.id,
+    });
 
     res.status(200).send();
   }

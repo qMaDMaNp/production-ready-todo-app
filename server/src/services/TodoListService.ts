@@ -1,81 +1,76 @@
 import { TodoList, TodoListDocument } from '@db/models/TodoList';
 import { TodoListItem, TodoListItemDocument } from '@db/models/TodoListItem';
-import { ObjectId } from 'mongodb';
+
 
 interface getAllParams {
     userId: string;
 }
 
-interface getTodoListParams {
+interface getOneParams {
     userId: string;
     todoListId: string;
 }
 
-interface createTodoListParams {
+interface createParams {
     userId: string;
+    name: string;
+    color: string;
 }
 
-interface updateTodoListParams {
+interface updateParams {
     userId: string;
+    todoListId: string;
+    name: string;
+    color: string;
 }
 
-interface removeTodoListParams {
+interface removeParams {
     userId: string;
+    todoListId: string;
 }
-
 
 class TodoListService {
     async getAll({ userId }: getAllParams): Promise<TodoListDocument[]> {
         const todoLists = await TodoList.find({ userId, deletedAt: { $exists: false } }).sort({ createdAt: -1 })
         return todoLists;
     }
- 
-    async getTodoList({ userId, todoListId }: getTodoListParams) {
-        // const todoList = await TodoList.findOne({ _id: todoListId, userId });
-        // const todoListItems = await TodoListItem.find({ todoListId });
 
-        // return { todoList, todoListItems };
+    async getOne({ userId, todoListId }: getOneParams): Promise<TodoListDocument> {
+        const todoList = await TodoList.findOne({ _id: todoListId, userId });
+        return todoList
     }
 
-    async createTodoList(name: string, userId: string, color: string): Promise<TodoListDocument> {
-        const todoList = await TodoList.create({ name, userId, color });
+    async create({ userId, name, color }: createParams): Promise<TodoListDocument> {
+        const todoList = await TodoList.create({ userId, name, color });
         return todoList;
     }
 
-    async updateTodoList(todoListId: string, name: string, color: string): Promise<TodoListDocument> {
-        const todoList = await TodoList.findOneAndUpdate(
-            { _id: todoListId },
-            { name, color },
-            { new: true }
-        );
+    async update({ userId, todoListId, name, color }: updateParams): Promise<TodoListDocument> {
+        const todoList = await TodoList.findOne({ _id: todoListId, userId });
+
+        Object.assign(todoList, {
+            name,
+            color
+        });
+
+        await todoList.save();
 
         return todoList;
     }
 
-    async removeTodoList(todoListId: string): Promise<TodoListDocument> {
-        const todoList = await TodoList.findOneAndUpdate(
-            { _id: todoListId },
-            {
-                $set: {
-                    changedAt: Date.now(),
-                    deletedAt: Date.now()
-                }
-            },
-            { new: true }
-        );
+    async remove({ userId, todoListId }: removeParams): Promise<number> {
+        const todoList = await TodoListItem.findOne({ _id: todoListId, userId });
 
-        await TodoListItem.updateMany(
-            { todoListId },
-            {
-                $set: {
-                    changedAt: Date.now(),
-                    deletedAt: Date.now()
-                }
-            },
-            { new: true }
-        );
+        if (todoList.deletedAt) throw 'Already removed';
 
-        return todoList;
+        Object.assign(todoList, {
+            changedAt: Date.now(),
+            deletedAt: Date.now()
+        });
+
+        await todoList.save();
+
+        return 1;
     }
 }
 

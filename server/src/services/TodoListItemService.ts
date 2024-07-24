@@ -1,64 +1,94 @@
+import { TodoList } from '@db/models/TodoList';
 import { TodoListItem, TodoListItemDocument } from '@db/models/TodoListItem';
-import { ObjectId } from 'mongodb';
+
+
+interface getAllParams {
+    userId: string;
+    todoListId: string;
+}
+
+interface getOneParams {
+    userId: string;
+    todoListItemId: string;
+}
+
+interface createParams {
+    userId: string;
+    todoListId: string;
+    name: string;
+}
+
+interface updateParams {
+    userId: string;
+    todoListItemId: string;
+    name: string;
+}
+
+interface removeParams {
+    userId: string;
+    todoListItemId: string;
+}
 
 class TodoListItemService {
-    async getAll(userId: string, todoListId: string): Promise<TodoListItemDocument[]> {
-        console.log(userId, todoListId);
-        const todoListItems = await TodoListItem.find({ todoListId, deletedAt: { $exists: false } })
-            .sort({ createdAt: -1 })
-            .populate('todoListId', 'userId');
+    async verifyOwner(userId: string, todoListId: string) {
+        const todoList = await TodoList.findOne({ _id: todoListId, userId });
+        if (todoList && todoList.userId.equals(userId)) throw 'Access denied';
+    }
+    
+    async getAll({ userId, todoListId }: getAllParams): Promise<TodoListItemDocument[]> {
+        await this.verifyOwner(userId, todoListId);
 
-        if (todoListItems.length && !todoListItems[0].todoListId.userId.equals(userId)) {
-            throw 'Access denied';
-        }
+        const todoListItems = await TodoListItem
+            .find({
+                todoListId,
+                deletedAt: { $exists: false }
+            })
+            .sort({ createdAt: -1 });
+
 
         return todoListItems;
     }
 
-    async getTodoListItem(todoListItemId: string) {
+    async getOne({ userId, todoListItemId }: getOneParams) {
         const todoListItem = await TodoListItem.findOne({ _id: todoListItemId });
+        await this.verifyOwner(userId, todoListItem.todoListId.toString());
+
         return todoListItem;
     }
 
-    async createTodoListItem(todoListId: string, name: string, userId: string, color: string): Promise<TodoListItemDocument> {
-        const todoList = await TodoListItem.create({ todoListId, name, userId, color });
+    async create({ userId, todoListId, name }: createParams): Promise<TodoListItemDocument> {
+        await this.verifyOwner(userId, todoListId);
+        const todoList = await TodoListItem.create({ todoListId, name });
         return todoList;
     }
 
-    async updateTodoListItem(todoListItemId: string, name: string, color: string): Promise<TodoListItemDocument> {
-        const todoList = await TodoListItem.findOneAndUpdate(
-            { _id: todoListItemId },
-            { name, color },
-            { new: true }
-        );
+    async update({ userId, todoListItemId, name }: updateParams): Promise<TodoListItemDocument> {
+        const todoListItem = await TodoListItem.findOne({ _id: todoListItemId });
+        await this.verifyOwner(userId, todoListItem.todoListId.toString());
 
-        return todoList;
+        Object.assign(todoListItem, {
+            name
+        });
+
+        await todoListItem.save();
+
+        return todoListItem;
     }
 
-    async removeTodoListItem(todoListItemId: string): Promise<TodoListItemDocument> {
-        const todoList = await TodoListItem.findOneAndUpdate(
-            { _id: todoListItemId },
-            {
-                $set: {
-                    changedAt: Date.now(),
-                    deletedAt: Date.now()
-                }
-            },
-            { new: true }
-        );
+    async remove({ userId, todoListItemId }: removeParams): Promise<number> {
+        const todoListItem = await TodoListItem.findOne({ _id: todoListItemId });
+        await this.verifyOwner(userId, todoListItem.todoListId.toString());
 
-        await TodoListItem.updateMany(
-            { todoListItemId },
-            {
-                $set: {
-                    changedAt: Date.now(),
-                    deletedAt: Date.now()
-                }
-            },
-            { new: true }
-        );
+        if (todoListItem.deletedAt) throw 'Already removed';
 
-        return todoList;
+        Object.assign(todoListItem, {
+            changedAt: Date.now(),
+            deletedAt: Date.now()
+        });
+
+        await todoListItem.save();
+
+        return 1;
     }
 }
 
