@@ -17,15 +17,15 @@ services:
     container_name: $MONGODB_CONTAINER_NAME
     image: mongo:7.0.6
     env_file: ./.env
-    # environment:
-      # MONGO_INITDB_ROOT_USERNAME: $MONGODB_ROOT_USERNAME
-      # MONGO_INITDB_ROOT_PASSWORD: $MONGODB_ROOT_PASSWORD
-      # MONGO_INITDB_DATABASE: $MONGODB_DATABASE
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: $MONGODB_ROOT_USERNAME
+      MONGO_INITDB_ROOT_PASSWORD: $MONGODB_ROOT_PASSWORD
+      MONGO_INITDB_DATABASE: $MONGODB_DATABASE
     ports:
       - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
     volumes:
-      - todo-dev-db:/data/db
+      - production-todo-db:/data/db
 
 volumes:
-  todo-dev-db:
+  production-todo-db:
 

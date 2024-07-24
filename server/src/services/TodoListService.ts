@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 import { TodoList, TodoListDocument } from '@db/models/TodoList';
 import { TodoListItem, TodoListItemDocument } from '@db/models/TodoListItem';
 
@@ -61,22 +63,43 @@ class TodoListService {
   async remove({ userId, todoListId }: removeParams): Promise<number> {
     //TODO: when deleting a list remove all its items as well
     //and  that should be a transaction
-    const todoList = await TodoList.findOne({
-      _id: todoListId,
-      userId,
-      deletedAt: { $exists: false }
-    });
+    const session = await mongoose.startSession();
 
-    if (!todoList || todoList.deletedAt) throw 'Already removed';
+    try {
+      session.startTransaction();
 
-    Object.assign(todoList, {
-      changedAt: Date.now(),
-      deletedAt: Date.now()
-    });
+      const todoList = await TodoList.findOne({
+        _id: todoListId,
+        userId,
+        deletedAt: { $exists: false }
+      });
 
-    await todoList.save();
+      if (!todoList || todoList.deletedAt) throw 'Already removed';
 
-    return 1;
+      await TodoListItem.updateMany({ todoListId }, {
+        $set: {
+          deletedAt: Date.now()
+        }
+      }, { session })
+
+      Object.assign(todoList, {
+        changedAt: Date.now(),
+        deletedAt: Date.now()
+      });
+
+      await todoList.save({ session })
+      throw 'Name pezdaaaaaaaa';
+      await session.commitTransaction();
+
+      return 1;
+    }
+    catch (e) {
+      await session.abortTransaction();
+      throw e;
+    }
+    finally {
+      await session.endSession();
+    }
   }
 }
 

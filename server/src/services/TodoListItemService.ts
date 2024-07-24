@@ -32,10 +32,16 @@ interface removeParams {
 class TodoListItemService {
 	async verifyOwner(userId: string, todoListId: string) {
 		try {
-			const todoList = await TodoList.findOne({ _id: todoListId, userId });
+			const todoList = await TodoList.findOne({ 
+				_id: todoListId, 
+				userId,
+				deletedAt: { $exists: false } 
+			});
 
 			if (!todoList) throw 'List does not exist';
 			if (!todoList.userId.equals(userId)) throw 'Access denied';
+
+			return todoList;
 		}
 		catch (e) {
 			throw e.message || e;
@@ -65,8 +71,9 @@ class TodoListItemService {
 
 	async create({ userId, todoListId, name }: createParams): Promise<TodoListItemDocument> {
 		await this.verifyOwner(userId, todoListId);
-		const todoList = await TodoListItem.create({ todoListId, name });
-		return todoList;
+		const todoListItem = await TodoListItem.create({ todoListId, name });
+		
+		return todoListItem;
 	}
 
 	async update({ userId, todoListItemId, name }: updateParams): Promise<TodoListItemDocument> {
