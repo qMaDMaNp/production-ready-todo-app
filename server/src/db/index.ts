@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 class DB {
   public async connect() {
-    const url = `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DB_NAME}?authSource=admin`;
+    const url = `mongodb://${process.env.MONGODB_HOST}/${process.env.MONGODB_DB_NAME}?replicaSet=rs0`;
 
     try {
       await mongoose.connect(url);

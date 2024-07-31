@@ -12,20 +12,32 @@ services:
       - ../../server:/app
     depends_on:
       - mongodb
-  
+
   mongodb:
     container_name: $MONGODB_CONTAINER_NAME
     image: mongo:7.0.6
     env_file: ./.env
     environment:
-      MONGO_INITDB_ROOT_USERNAME: $MONGODB_ROOT_USERNAME
-      MONGO_INITDB_ROOT_PASSWORD: $MONGODB_ROOT_PASSWORD
+    #   MONGO_INITDB_ROOT_USERNAME: $MONGODB_ROOT_USERNAME
+    #   MONGO_INITDB_ROOT_PASSWORD: $MONGODB_ROOT_PASSWORD
       MONGO_INITDB_DATABASE: $MONGODB_DATABASE
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27018"]
     ports:
-      - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
+      - 27018:27018
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'host.docker.internal:27018'}]}) }" | mongosh --port 27018 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
     volumes:
-      - production-todo-db:/data/db
+      - "production-todo-db_data:/data/db"
+      - "production-todo-db_config:/data/configdb"
 
 volumes:
-  production-todo-db:
+  production-todo-db_data:
+  production-todo-db_config:
 
