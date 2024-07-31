@@ -33,7 +33,7 @@ interface removeParams {
 
 class TodoListService {
   async getAll({ userId }: getAllParams): Promise<TodoListDocument[]> {
-    const todoLists = await TodoList.find({ userId, deletedAt: { $exists: false } }).sort({ createdAt: -1 })
+    const todoLists = await TodoList.find({ userId, deletedAt: null }).sort({ createdAt: -1 })
     return todoLists;
   }
 
@@ -61,8 +61,6 @@ class TodoListService {
   }
 
   async remove({ userId, todoListId }: removeParams): Promise<number> {
-    //TODO: when deleting a list remove all its items as well
-    //and  that should be a transaction
     const session = await mongoose.startSession();
 
     try {
@@ -71,7 +69,7 @@ class TodoListService {
       const todoList = await TodoList.findOne({
         _id: todoListId,
         userId,
-        deletedAt: { $exists: false }
+        deletedAt: null
       });
 
       if (!todoList || todoList.deletedAt) throw 'Already removed';
@@ -88,7 +86,7 @@ class TodoListService {
       });
 
       await todoList.save({ session })
-      throw 'Name pezdaaaaaaaa';
+
       await session.commitTransaction();
 
       return 1;

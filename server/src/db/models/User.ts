@@ -7,7 +7,7 @@ export interface UserDocument extends Document {
     password: string;
     changedAt: Date;
     createdAt: Date;
-    deletedAt: Date;
+    deletedAt: Date | null;
   };
   
   const UserSchema = new Schema({
@@ -36,7 +36,8 @@ export interface UserDocument extends Document {
         default: Date.now
     },
     deletedAt: {
-        type: Date
+        type: Date,
+        default: null
     },
   }, 
   {

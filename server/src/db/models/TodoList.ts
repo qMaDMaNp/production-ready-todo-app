@@ -6,7 +6,7 @@ export interface TodoListDocument extends Document {
     color: string;
     changedAt: Date;
     createdAt: Date;
-    deletedAt: Date;
+    deletedAt: Date | null;
 };
 
 const TodoListSchema = new Schema(
@@ -22,6 +22,7 @@ const TodoListSchema = new Schema(
         },
         color: {
             type: String,
+            default: ''
         },
         createdAt: {
             type: Date,
@@ -33,12 +34,15 @@ const TodoListSchema = new Schema(
             default: Date.now
         },
         deletedAt: {
-            type: Date
+            type: Date,
+            default: null
         },
     },
     {
         collection: 'todoLists'
     }
 );
+
+TodoListSchema.index({ userId: 1 });
 
 export const TodoList = model<TodoListDocument>('TodoList', TodoListSchema);

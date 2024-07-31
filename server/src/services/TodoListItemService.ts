@@ -35,7 +35,7 @@ class TodoListItemService {
 			const todoList = await TodoList.findOne({ 
 				_id: todoListId, 
 				userId,
-				deletedAt: { $exists: false } 
+				deletedAt: null
 			});
 
 			if (!todoList) throw 'List does not exist';
@@ -54,7 +54,7 @@ class TodoListItemService {
 		const todoListItems = await TodoListItem
 			.find({
 				todoListId,
-				deletedAt: { $exists: false }
+				deletedAt: null
 			})
 			.sort({ createdAt: -1 });
 
@@ -92,7 +92,7 @@ class TodoListItemService {
 	async remove({ userId, todoListItemId }: removeParams): Promise<number> {
 		const todoListItem = await TodoListItem.findOne({
 			_id: todoListItemId,
-			deletedAt: { $exists: false }
+			deletedAt: null
 		});
 
 		if (!todoListItem || todoListItem.deletedAt) throw 'Already removed';
