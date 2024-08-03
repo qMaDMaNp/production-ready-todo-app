@@ -31,19 +31,11 @@ class Main {
         this.server.use(cors({
             credentials: true,
             origin: [
-                "http://localhost:8080",
-                "http://127.0.0.1:8080",
-                "http://localhost:8081",
-                "http://127.0.0.1:8081",
-                "http://localhost:3000",
-                "http://127.0.0.1:3000",
-                "http://localhost:4444",
-                "http://127.0.0.1:4444",
-                "http://localhost:5173",
-                "http://127.0.0.1:5173"
+                "http://localhost",
+                "http://127.0.0.1"
             ]
         }));
-    
+
         this.server.use(bodyParser.json());
         this.server.use(bodyParser.urlencoded({ extended: false }));
 
@@ -51,7 +43,7 @@ class Main {
 
         // server.use('/files', express.static(path.resolve("/services/files-storage")));
         // server.use('/avatars', express.static(path.resolve("/services/files-storage/avatars")));
-        
+
         this.server.use("/api", routes);
         this.server.use(ApiErrorMiddleware);
     }
@@ -71,7 +63,7 @@ class Main {
                 maxAge: 60000 * 60,
             }
         }));
-        
+
         this.server.use(passport.initialize());
         this.server.use(passport.session());
     }

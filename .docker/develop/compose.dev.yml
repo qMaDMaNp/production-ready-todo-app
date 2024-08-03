@@ -28,7 +28,7 @@ services:
       - "host.docker.internal:host-gateway"
     healthcheck:
       test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'host.docker.internal:27018'}]}) }" | mongosh --port 27018 --quiet
-      interval: 5s
+      interval: 60s
       timeout: 30s
       start_period: 0s
       start_interval: 1s

@@ -2,69 +2,86 @@ version: '3'
 
 services:
   server:
-    image: node:18-alpine
     build: ../../server
     restart: unless-stopped
     ports:
-      - 127.0.0.1:4444:4444
-    volumes:
-      - ../../server:/app
+      - 4444:4444
     depends_on:
       - mongodb
+
+  nginx-react:
+    container_name: frontend
+    build: ../../client
+    ports:
+      - 80:80
+    environment:
+      NODE_ENV: production
   
   mongodb:
     container_name: $MONGODB_CONTAINER_NAME
     image: mongo:7.0.6
     env_file: ./.env
-    # environment:
-      # MONGO_INITDB_ROOT_USERNAME: $MONGODB_ROOT_USERNAME
-      # MONGO_INITDB_ROOT_PASSWORD: $MONGODB_ROOT_PASSWORD
-      # MONGO_INITDB_DATABASE: $MONGODB_DATABASE
-    ports:
-      - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
-    volumes:
-      - todo-db:/data/db
-
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    ports:
-      - 9090:9090
-    restart: unless-stopped
-    volumes:
-      - ./prometheus:/etc/prometheus
-      - prom_data:/prometheus
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    ports:
-      - 3001:3000
-    restart: unless-stopped
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=grafana
-    volumes:
-      - ./grafana:/etc/grafana/provisioning/datasources
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
+    #   MONGO_INITDB_ROOT_USERNAME: $MONGODB_ROOT_USERNAME
+    #   MONGO_INITDB_ROOT_PASSWORD: $MONGODB_ROOT_PASSWORD
+      MONGO_INITDB_DATABASE: $MONGODB_DATABASE
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27018"]
     ports:
-      - "8080:8080"
+      - 27018:27018
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'host.docker.internal:27018'}]}) }" | mongosh --port 27018 --quiet
+      interval: 60s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
     volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
+      - "production-todo-db_data:/data/db"
+      - "production-todo-db_config:/data/configdb"
 
-  node-exporter:
-    image: prom/node-exporter:latest
-    ports:
-      - "9100:9100"
+  # prometheus:
+  #   image: prom/prometheus
+  #   container_name: prometheus
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #   ports:
+  #     - 9090:9090
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./prometheus:/etc/prometheus
+  #     - prom_data:/prometheus
+
+  # grafana:
+  #   image: grafana/grafana
+  #   container_name: grafana
+  #   ports:
+  #     - 3001:3000
+  #   restart: unless-stopped
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SECURITY_ADMIN_PASSWORD=grafana
+  #   volumes:
+  #     - ./grafana:/etc/grafana/provisioning/datasources
+
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:latest
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:ro
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+
+  # node-exporter:
+  #   image: prom/node-exporter:latest
+  #   ports:
+  #     - "9100:9100"
 
 volumes:
-  todo-db:
+  production-todo-db_data:
+  production-todo-db_config:
   prom_data:
 
