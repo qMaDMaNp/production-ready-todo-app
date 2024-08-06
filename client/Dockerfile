@@ -1,4 +1,3 @@
-# build environment
 FROM node:18-alpine as build
 
 RUN mkdir -p /home/node/frontend/app/node_modules && chown -R node:node /home/node/frontend/app

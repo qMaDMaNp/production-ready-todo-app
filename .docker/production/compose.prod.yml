@@ -4,18 +4,33 @@ services:
   server:
     build: ../../server
     restart: unless-stopped
-    ports:
-      - 4444:4444
     depends_on:
       - mongodb
 
-  nginx-react:
-    container_name: frontend
+  client:
     build: ../../client
-    ports:
-      - 80:80
+    restart: unless-stopped
     environment:
       NODE_ENV: production
+
+  webserver:
+    build: ./nginx
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # - web-root:/var/www/html
+      - ./nginx/nginx-conf:/etc/nginx/conf.d
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - dhparam:/etc/ssl/certs
+    depends_on:
+      - client
+      - server
+    networks:
+      - app-network
   
   mongodb:
     container_name: $MONGODB_CONTAINER_NAME
@@ -80,8 +95,37 @@ services:
   #   ports:
   #     - "9100:9100"
 
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      # - web-root:/var/www/html
+    command: certonly --webroot --webroot-path=/var/www/html --email mymail@gmail.com --agree-tos --no-eff-email --force-renewal -d local-todo.com -d www.local-todo.com
+    depends_on:
+      - webserver
+
 volumes:
   production-todo-db_data:
   production-todo-db_config:
-  prom_data:
+  # prom_data:
+  certbot-etc:
+  certbot-var:
+  # web-root:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     device: /home/madman/node_project/views/
+  #     o: bind
+  dhparam:
+   driver: local
+   driver_opts:
+     type: none
+     device: /home/node/server/app/dhparam/
+     o: bind
+
+networks:
+  app-network:
+    driver: bridge
 
