@@ -2,7 +2,7 @@ import axios from 'axios';
 import authHelper from '@lib/authHelper';
 
 const api = axios.create({
-  baseURL: 'http://localhost:4444/api',
+  baseURL: '/api',
   timeout: 10000,
   withCredentials: true,
   headers: {
