@@ -28,13 +28,13 @@ class Main {
     }
 
     registerMiddleware() {
-        this.server.use(cors({
-            credentials: true,
-            origin: [
-                "http://localhost",
-                "http://127.0.0.1"
-            ]
-        }));
+        // this.server.use(cors({
+        //     credentials: true,
+        //     origin: [
+        //         "http://localhost",
+        //         "http://127.0.0.1"
+        //     ]
+        // }));
 
         this.server.use(bodyParser.json());
         this.server.use(bodyParser.urlencoded({ extended: false }));
